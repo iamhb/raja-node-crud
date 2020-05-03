@@ -43,13 +43,37 @@ app.post('/submitUser', (req, res) => {
     });
 });
 
-app.get('getAllUserDocs', (req, res) => {
-    mUser.find({}, {}, {}, (userErr, userDocs) => {
-        if (err) {
+// getting all user docs
+app.get('/getAllUserDocs', (req, res) => {
+    /**
+     * 1st {} = match query
+     * 2nd {} = projection
+     * 3rd {} utility
+     */
+    mUser.find({}, {}, { lean: true }, (userErr, userDocs) => {
+        if (userErr) {
             console.log("err while fetching docs");
             res.json({ "docs": "null" });
         } else {
             res.json({ "docs": userDocs });
+        }
+    });
+});
+
+app.post('/editUser', (req, res) => {
+    mUser.findById({ _id: req.body._id }, {}, {}, (err, docs) => {
+        if (err) {
+            res.json({ "update": null });
+
+        } else {
+            docs.name = req.body.newname;
+            docs.save((updateErr, updateDocs) => {
+                if (updateErr) {
+                    res.json({ "update": null });
+                } else {
+                    res.json({ "update": "succ" });
+                }
+            });
         }
     });
 });
