@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose')
 const mUser = require('./models/mUser');
+const rUser = require('./routes/rUser');
 
 // db connection
 mongoose.connect("mongodb://localhost:27017/rajaDB", { useNewUrlParser: true, useUnifiedTopology: true }, (err, succ) => {
@@ -26,22 +27,10 @@ app.listen(3000, () => {
     console.log("Server started at 3000");
 });
 
-app.post('/submitUser', (req, res) => {
-    // new document creation
-    let newmUser = new mUser();
-    newmUser.name = req.body.userName;
-    newmUser.age = req.body.userAge;
-    newmUser.save((saveErr, saveDocs) => {
-        if (saveErr) {
-            console.log("err at saving docs to db");
-            res.json({ "docs": "err" })
-        } else {
-            console.log("doc saved succ");
-            console.log(saveDocs);
-            res.json({ "docs": saveDocs })
-        }
-    });
-});
+
+
+app.use('/user', rUser);
+
 
 // getting all user docs
 app.get('/getAllUserDocs', (req, res) => {
